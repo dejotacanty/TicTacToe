@@ -297,7 +297,7 @@ public boolean botHardTurn(int turn, boolean first_player){
 				}
 			}
 			break;
-
+			//end turn 1
 		case 2:
 			if(first_player == true){
 				if(this.cornerSpotTaken()){
