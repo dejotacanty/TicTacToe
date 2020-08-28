@@ -1,0 +1,22 @@
+class TextAreaPanel extends Frame
+{
+  private Panel textAreaPanel;
+  TextArea msgInputArea;
+  
+  public TextAreaPanel()
+  {
+    textAreaPanel = new Panel();
+    msgInputArea = new TextArea(1000,(int)UserInterface.getUIWidth() * 80/100);
+  }
+  
+  private void addTextArea()
+  {
+    textAreaPanel.add(msgInputArea);
+  }
+  
+  public Panel getPanel()
+  {
+    return textAreaPanel;
+  }
+
+    }

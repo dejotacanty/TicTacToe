@@ -47,19 +47,11 @@ public TicTacToe(boolean b, String humanPlayer){
     
     
   }
+  
+  
 }
 
 public TicTacToe(){
-  
-  displayMessage = "";
-  
-  board = new String[]{"1","2","3","4","5","6","7","8","9"};
-  
-  lastHumanMove = -1;
-  
-}
-
-public TicTacToe(boolean val){
  //The constructor is the shell behind the whole game
  //
  //Sets lastHumanMove and Populates the game board
