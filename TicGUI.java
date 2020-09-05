@@ -397,10 +397,33 @@ public class TicGUI extends TicTacToe{
         
       }
       
+      window.remove(TicGUI.this.southLabel);
+      window.add(this.createPlayAgainButton(), BorderLayout.SOUTH);
       window.repaint();
 
-
     }
-  }
     
+    
+    public JButton createPlayAgainButton(){
+      
+      JButton playAgainButton = new JButton("Play Again?");
+      
+      playAgainButton.addActionListener(new PlayAgainListener());
+      
+      
+      return playAgainButton;
+    }
+      
+  }
+  
+  private class PlayAgainListener implements ActionListener{
+    
+    public void actionPerformed(ActionEvent e){
+      window.dispose();
+      TicGUI newGame = new TicGUI();
+      
+    }
+      
+    }
+  
   }

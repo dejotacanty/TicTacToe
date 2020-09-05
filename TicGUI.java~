@@ -1,7 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.Math.*;
+import java.util.*;
 
+//
+//LAST ThING TO DO:
+//After the game is finished, remove the southLabel and replace it with a 'Play Again?' button
 public class TicGUI extends TicTacToe{
   
   
@@ -11,6 +16,8 @@ public class TicGUI extends TicTacToe{
   String difficulty;
   final int FRAME_WIDTH, FRAME_HEIGHT;
   
+  static String p1;
+  static String p2;
   
   //Pregame components
   JPanel pregamePanel;
@@ -26,7 +33,7 @@ public class TicGUI extends TicTacToe{
   
   JPanel[] panelArray;
   JTextField[] textFieldArray;
-  JButton[] buttonArray;
+  static JButton[] buttonArray;
   
   JPanel northPanel;
   JLabel northLabel;
@@ -70,6 +77,10 @@ public class TicGUI extends TicTacToe{
   
   //CONSTRUCTOR//
   public TicGUI(){
+    
+    p1 = "";
+    p2 = "";
+    
     window = new JFrame("Boi");
     
     FRAME_WIDTH = 300;
@@ -185,7 +196,7 @@ public class TicGUI extends TicTacToe{
     pregameButtonHard = new JButton("Hard");
     
     pregameButtonEasy.addActionListener(new PregameListener());
-    pregameButtonEasy.addActionListener(new PregameListener());
+    pregameButtonHard.addActionListener(new PregameListener());
     
     pregamePanel.add(pregameTextLabel);
     pregamePanel.add(pregameTextField);
@@ -246,8 +257,8 @@ public class TicGUI extends TicTacToe{
     public void actionPerformed(ActionEvent e ){
       
       String playerChoice = pregameTextField.getText();
-      playerChoice.trim().toUpperCase();
-      
+      playerChoice = playerChoice.trim().toUpperCase();
+      //System.out.println("PLayer Choice = " + playerChoice);
       if(playerChoice.length() == 1){
         switch(playerChoice){
           case "X":
@@ -257,7 +268,7 @@ public class TicGUI extends TicTacToe{
               difficulty = "hard";
             }
             p1 = "X";
-            p2 = "O";
+            TicGUI.p2 = "O";
             break;
           
           case "O":
@@ -266,38 +277,61 @@ public class TicGUI extends TicTacToe{
             }else{
               difficulty = "hard";
             }
-            p1 = "O";
-            p2 = "X";
+            TicGUI.p1 = "O";
+            TicGUI.p2 = "X";
             break;
           
         }
+        
+        
+        window.remove(pregamePanel);
+        TicGUI.this.northLabel.setText("Welcome to TicTacToe");
+        window.repaint();
+        TicGUI.this.populateFrame();
       }
-      
-      window.remove(pregamePanel);
-      window.repaint();
-      TicGUI.this.northLabel.setText("Booty");
-      window.repaint();
-      TicGUI.this.populateFrame();
     }
   }
   
   private class ButtonListener implements ActionListener {
     
     public void actionPerformed(ActionEvent e){
-      
+      System.out.println("Check for win: " + TicGUI.this.checkForWin(p1));
+      boolean humanPlayerWon = false;
+      if(this.playerTurn(e)){
+        this.gameWon(true);
+        humanPlayerWon = true;
+      }
+
+        TicGUI.this.pause(); //Only for the suspense tbh
+        
+        if(humanPlayerWon == false && this.easyBotTurn()){
+          this.gameWon(false);
+        }
+        TicGUI.this.printBoard();
+        window.repaint();
+        
+      }
+    
+    public boolean playerTurn(ActionEvent e){
+            
       System.out.println(e.getActionCommand());
       
       try{
         for(int i = 0;i < 9; i++){ 
           if(Integer.parseInt(e.getActionCommand()) == i){
-            System.out.println("int i euals " + i);
+           // System.out.println("int i euals " + i);
+           //System.out.println("iplayer 1 equals " + p1);
+            
+           // System.out.println("player 2 equals " + TicGUI.p1);
             
             
             if(TicGUI.this.checkIfOccupied(Integer.toString(i)) == false){
-              buttonArray[i].setText(TicGUI.this.getPlayerOne());
+              TicGUI.this.board[i] = p1;
+              buttonArray[i].setText(p1);
               buttonArray[i].setEnabled(false);
-              TicGUI.this.southLabel.setText("Bot Player is thinking...");
-              window.repaint();
+            //  System.out.println("Num of action listeners for button " + i + "equals " + buttonArray[i].getActionListeners().length);
+              //cGUI.this.southLabel.setText("Bot Player is thinking...");
+              
               //TicGUI now extends from TicTacToe
               //You will have to partially rebuild the bot turns within this method (or make other methods)
               //Since you can't use the loops from the original class
@@ -310,8 +344,63 @@ public class TicGUI extends TicTacToe{
           System.exit(1);
         }
         
-        TicGUI.this.printBoard();
-      }
+        return TicGUI.this.checkForWin(p1);
     }
+    public boolean easyBotTurn(){
+      
+      Random rand = new Random();
+      int randnum;
+      boolean randnum_parameters;
+      boolean check_if_occupied;
+      
+      do {
+        randnum = rand.nextInt(9);
+        randnum_parameters = TicGUI.this.board[randnum].equals(Integer.toString(randnum + 1)); 
+        check_if_occupied = this.checkIfOccupied(board[randnum]);
+        
+       // System.out.println("Randnum parameters check: " + board[randnum] + "  : ToString   " + Integer.toString(randnum + 1));
+      //  System.out.println("Randnum_parameters: " + randnum_parameters + "   Check_if_occupied: " + check_if_occupied);
+      }while(check_if_occupied);
+      
+      board[randnum] = p2;
+      
+      buttonArray[randnum].setText(p2);
+      buttonArray[randnum].setEnabled(false);
+      TicGUI.this.southLabel.setText("Your turn");
+      window.repaint();
+      
+      return TicGUI.this.checkForWin(p2); 
+      
+    }
+    
+    public boolean checkIfOccupied(String board_space){
+      //Critcal method that checks if a space is occupied by either player
+      
+     // System.out.println("player 1  = " + p1 + "    player 2 = " + p2);
+      return board_space.equals(p1) || board_space.equals(p2);
+      
+      
+    }//end checkIfOccupied
+
+    //True means player won, false means bot won
+    public void gameWon(boolean val){
+      if(val == true){
+        TicGUI.this.northLabel.setText("You Win!");
+        System.out.println("This works right?");
+        window.repaint();
+      }else{
+        TicGUI.this.northLabel.setText("Bot Wins!");
+      }
+     System.out.println("This is the endgame, right?");
+      for(int i = 0;i < 9;i++){
+        TicGUI.buttonArray[i].setEnabled(false);
+        
+      }
+      
+      window.repaint();
+
+
+    }
+  }
     
   }
